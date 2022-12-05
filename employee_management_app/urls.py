@@ -30,6 +30,8 @@ urlpatterns = [
 
     path('admin_profile/', HodViews.admin_profile, name="admin_profile"),
     path('admin_profile_update/', HodViews.admin_profile_update, name="admin_profile_update"),
+        path('staff_payroll_views/', HodViews.staff_payroll_views, name="staff_payroll_views"),
+
 
 
 
@@ -42,5 +44,12 @@ urlpatterns = [
     path('staff_feedback_save/', StaffViews.staff_feedback_save, name="staff_feedback_save"),
     path('staff_profile/', StaffViews.staff_profile, name="staff_profile"),
     path('staff_profile_update/', StaffViews.staff_profile_update, name="staff_profile_update"),
+
+    path('staff_attendance_view/', HodViews.staff_attendance_view, name="staff_attendance_view"),
+    path('add_attendance/', HodViews.add_attendance, name="add_attendance"),
+    path('add_attendance_save/', HodViews.add_attendance_save, name="add_attendance_save"),
+    
+
+    path('export_csv/', HodViews.export_csv, name="export_csv"),
 
 ]

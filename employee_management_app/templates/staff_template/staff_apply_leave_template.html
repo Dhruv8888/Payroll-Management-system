@@ -14,8 +14,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <!-- general form elements -->
-                    <div class="card card-primary">
-                    <div class="card-header">
+                    <div class="card bg-white">
+                    <div class="card-header bg-light">
                         <h3 class="card-title">Apply For Leave</h3>
                     </div>
                     <!-- /.card-header -->
@@ -49,22 +49,32 @@
                         {% csrf_token %}
                         <div class="card-body">
                            
-                            <div class="form-group">
-                                <label>Leave Date </label>
-                                <input type="date" name="leave_date" class="form-control" />
-                            </div>
+                            <span class="form-group">
+                                <label>Leave Start Date 
+                                <input type="date" name="leave_startdate" class="form-control" /></label>
+                                </span> &nbsp; &nbsp; &nbsp;
+
+                            <span class="form-group">
+                                <label>Leave End Date 
+                                <input type="date" name="leave_enddate" class="form-control" /> </label>
+                            </span>
 
                             <div class="form-group">
                                 <label>Leave Reason </label>
-                                <textarea name="leave_message" class="form-control" rows="6" placeholder="Leave Messge"></textarea>
+                                <input type="text" name="leave_message" class="form-control" />
                             </div>
+
+                            <!-- <div class="form-group">
+                                <label>Leave Reason </label>
+                                <textarea name="leave_message" class="form-control" rows="6" placeholder="Leave Messge"></textarea>
+                            </div> -->
 
 
                         </div>
                         <!-- /.card-body -->
 
                         <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">Apply for Leave</button>
+                        <button type="submit" class="btn btn-outline-primary">Apply for Leave</button>
                         </div>
 
                     </form>
@@ -79,19 +89,20 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success">
+                    <div class="card bg-light">
                         <div class="card-header">
                             <h3 class="card-title">Leave Apply History</h3>
                         </div>
 
                         <div class="card-body">
                            <div class="table-responsive">
-                                <table class="table">
+                                <table class="table" data-sortable area-sort="ascending">
                                     <thead class="thead-light">
                                     <tr>
-                                        <th>#ID</th>
-                                        <th>Leave Date</th>
-                                        <th>Leave Message</th>
+                                        <th><a class="dataTable-sorter">Leave Request ID</a></th>
+                                        <th><a class="dataTable-sorter">Leave Start Date</a></th>
+                                        <th><a class="dataTable-sorter">Leave End Date</a></th>
+                                        <th><a class="dataTable-sorter">Leave Reason</a></th>
                                         <th>Status</th>
                                     </tr>
                                     </thead>
@@ -99,15 +110,16 @@
                                     {% for leave in leave_data %}
                                     <tr>
                                         <td>{{ leave.id }}</td>
-                                        <td>{{ leave.leave_date }}</td>
+                                        <td>{{ leave.leave_startdate }}</td>
+                                        <td>{{ leave.leave_enddate }}</td>
                                         <td>{{ leave.leave_message }}</td>
                                         <td>
                                             {% if leave.leave_status == 1 %}
-                                                <span class="alert alert-success">Approved</span>
+                                                <button class="alert alert-success">Approved</button>
                                             {% elif leave.leave_status == 2 %}
-                                                <span class="alert alert-danger">Rejected</span>
+                                                <button class="alert alert-danger">Rejected</button>
                                             {% else %}
-                                                <span class="alert alert-warning">Pending</span>
+                                                <button class="alert alert-warning">Pending</button>
                                             {% endif %}
                                         </td>
                                     </tr>

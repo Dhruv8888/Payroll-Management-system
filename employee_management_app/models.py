@@ -44,12 +44,13 @@ class Staffs(models.Model):
 class LeaveReportStaff(models.Model):
     id = models.AutoField(primary_key=True)
     staff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
-    leave_date = models.CharField(max_length=255)
-    leave_message = models.TextField()
+    leave_startdate = models.DateField(null=True)
+    leave_enddate = models.DateField(null=True)
+    leave_message = models.TextField(null=True)
     leave_status = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    objects = models.Manager()
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+    objects=models.Manager()
 
 
 
@@ -71,7 +72,7 @@ class FeedBackStaffs(models.Model):
 
 class NotificationStaffs(models.Model):
     id = models.AutoField(primary_key=True)
-    stafff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -79,7 +80,25 @@ class NotificationStaffs(models.Model):
 
 
 
+class AttendanceReportStaff(models.Model):
+    id = models.AutoField(primary_key=True)
+    staff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
+    attendance_date = models.DateField(null=True)
+    # attendance_date=models.DateField(null=True)
+    # attendance_message = models.TextField()
+    # attendance_status = models.TextField()
+    intime=models.TimeField(null=True)
+    outtime=models.TimeField(null=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+    objects = models.Manager()
 
+class PayrollReportStaff(models.Model):
+    id = models.AutoField(primary_key=True)
+    staff_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
+    payroll_date = models.DateField(null=True)
+    payroll_money=models.IntegerField()
+    objects = models.Manager()
 
 #Creating Django Signals
 

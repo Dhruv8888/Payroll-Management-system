@@ -1,3 +1,6 @@
+from dataclasses import fields
+from datetime import datetime
+from urllib import response
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
@@ -6,34 +9,17 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json
+import csv
+from employee_management_app.models import CustomUser,  Staffs,  FeedBackStaffs,  LeaveReportStaff, AttendanceReportStaff,PayrollReportStaff
 
-from employee_management_app.models import CustomUser,  Staffs,  FeedBackStaffs,  LeaveReportStaff
-
-
+from django.contrib.admin.widgets import AdminDateWidget, AdminTimeWidget
+from django import forms
 
 def admin_home(request):
    
-    staff_count = Staffs.objects.all().count()
-
-    
-   
-    staff_name_list=[]
-
     staffs = Staffs.objects.all()
-    for staff in staffs:
-       
-        leaves = LeaveReportStaff.objects.filter(staff_id=staff.id, leave_status=1).count()
-       
-        staff_name_list.append(staff.admin.first_name)
-
-   
-
-    context={
-    
-        "staff_count": staff_count,
-   
-        "staff_name_list": staff_name_list,
-   
+    context = {
+        "staffs": staffs
     }
     return render(request, "hod_template/home_content.html", context)
 
@@ -241,5 +227,142 @@ def staff_profile(request):
     pass
 
 
-def student_profile(requtest):
+def student_profile(request):
     pass
+
+
+
+
+def add_attendance(request):
+    return render(request, "hod_template/add_attendance_template.html")
+
+
+
+def add_attendance_save(request):
+   
+    if request.method != "POST":
+        messages.error(request, "Invalid Method ")
+        return redirect('add_attendance')
+    else:
+    
+        x=request.POST.get('staff_id')
+        staff_id=Staffs.objects.get(admin=x)
+        # print(staff_id.id)
+        attendance_date=request.POST.get('attendance_date')
+        payroll_date =request.POST.get('attendance_date')
+       
+        if PayrollReportStaff.objects.filter(staff_id=Staffs.objects.get(admin=x)).exists():
+            y=PayrollReportStaff.objects.filter(staff_id=Staffs.objects.get(admin=x))
+            print(y)
+            for i in y : 
+                
+                z= i.payroll_money
+                payroll_money=z+100
+        else:
+            payroll_money= 100
+
+        # attendance_message = request.POST.get('attendance_message')
+        # attendance_status = request.POST.get('attendance_status')
+        intime= request.POST.get('intime')
+        outtime= request.POST.get('outtime')
+        # class Meta:
+        #     model= AttendanceReportStaff
+        #     fields= "__all__"
+        #     widgets={
+        #         "attendance_date": AdminDateWidget(),
+        #         "intime": AdminTimeWidget(),
+        #         "outtime": AdminTimeWidget(),
+        #     }
+
+        # email = request.POST.get('email')
+        # password = request.POST.get('password')
+        # address = request.POST.get('address')
+
+        try:
+            user = AttendanceReportStaff.objects.create(staff_id=staff_id,attendance_date=attendance_date, intime=intime, outtime=outtime)
+            user2 = PayrollReportStaff.objects.create(staff_id=staff_id,payroll_date=attendance_date,payroll_money=payroll_money)
+
+            #user.save()
+            messages.success(request, "Staff Added Successfully!")
+            return redirect('add_attendance')
+        except:
+            messages.error(request, "Failed to Add attendance!")
+            return redirect('add_attendance')
+
+def staff_attendance_view(request):
+    attendance = AttendanceReportStaff.objects.all()
+    context = {
+
+        "attendance": attendance
+    }
+    return render(request, 'hod_template/staff_attendance_view.html', context)
+
+# def staff_attendance_view(request):
+#     staffs = Staffs.objects.all()
+#     context = {
+#         "staffs": staffs
+#     }
+#     return render(request, "hod_template/staff_attendance_view.html", context)   
+def add_payroll_save(request):
+   
+    if request.method != "POST":
+        messages.error(request, "Invalid Method ")
+        return redirect('add_attendance')
+    else:
+    
+        x=request.POST.get('staff_id')
+        staff_id=Staffs.objects.get(admin=x)
+        print(staff_id.id)
+        payroll_date =request.POST.get('attendance_date')
+        # attendance_message = request.POST.get('attendance_message')
+        # attendance_status = request.POST.get('attendance_status')
+        # intime= request.POST.get('intime')
+        # outtime= request.POST.get('outtime')
+        # class Meta:
+        #     model= AttendanceReportStaff
+        #     fields= "__all__"
+        #     widgets={
+        #         "attendance_date": AdminDateWidget(),
+        #         "intime": AdminTimeWidget(),
+        #         "outtime": AdminTimeWidget(),
+        #     }
+
+        # email = request.POST.get('email')
+        # password = request.POST.get('password')
+        # address = request.POST.get('address')
+
+        try:
+            user = PayrollReportStaff.objects.create(staff_id=staff_id,payroll_date=payroll_date)
+            #user.save()
+            messages.success(request, "Staff Added Successfully!")
+            return redirect('add_attendance')
+        except:
+            messages.error(request, "Failed to Add attendance!")
+            return redirect('add_attendance')
+
+def staff_payroll_views(request):
+    payroll= PayrollReportStaff.objects.all()
+    context = {
+
+        "payroll": payroll
+    }
+
+    print(payroll)
+
+
+    return render(request, 'hod_template/staff_payroll_template.html', context)
+
+
+def export_csv(request):
+
+    response=HttpResponse(content_type='text/csv')
+    response['Content-Disposition']='attachment; fileName=Attendance'+ '.csv'
+    writer=csv.writer(response)
+    writer.writerow(['Staff ID','Attendance Date','In Time','Out Time'])
+
+
+    attendances = AttendanceReportStaff.objects.all()
+    for attendance in attendances:
+
+        writer.writerow([attendance.staff_id.id+1, attendance.attendance_date,attendance.intime,attendance.outtime])
+    return response
